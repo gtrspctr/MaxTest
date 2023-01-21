@@ -22,16 +22,14 @@ port = 443
 # Define filepaths
 server_path = os.path.dirname(__file__)		# Main directory
 html_source = os.path.join(server_path,
-						"index.html")	# HTML content
+						"index.html")		# HTML content
+json_source = os.path.join(server_path,
+						"todo_list.json")	# JSON content
 file_repo = os.path.join(server_path,
 					  "file_repository")	# Repository for file uploads
 cert_repo = os.path.abspath(os.path.join(server_path,
 					  					 os.pardir,
 					 					 "cert_repository"))	# Repository for certificates
-print("Path: " + server_path)
-print("html: " + html_source)
-print("file: " + file_repo)
-print("cert: " + cert_repo)
 
 # This class is the request handler.
 # do_GET sends a response of 200 when
@@ -48,19 +46,30 @@ class AlsRequestHandler(BaseHTTPRequestHandler):
 		# self.wfile.write(bytes("", "utf-8"))
 		self.wfile.write(bytes(html, "utf-8"))
 
+	"""
 	def do_POST(self):
 		self.send_response(200)
 		self.send_header("Content-type", "application/json")
+		self.end_headers()
+		self.wfile.write(bytes(json))
+	"""
 
-try:
-	with open(html_source, "r") as reader:
-		html = reader.read()
-except FileNotFoundError as fnfe:
-	print("HTML source file is not present")
-	exit(1)
-except:
-	print("Something went wrong.")
-	exit(1)
+def readFiles(source, output):
+	try:
+		with open(source, "r") as reader:
+			output = reader.read()
+		return output
+	except FileNotFoundError as fnfe:
+		print("HTML source file is not present")
+		exit(1)
+	except:
+		print("Something went wrong.")
+		exit(1)
+
+html = ""
+json = ""
+html = readFiles(html_source, html)
+json = readFiles(json_source, json)
 
 server = HTTPServer((host_addr, port), AlsRequestHandler)
 cert_file = os.path.join(cert_repo, "public.pem")
