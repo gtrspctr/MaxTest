@@ -21,15 +21,19 @@ port = 443
 
 # Define filepaths
 server_path = os.path.dirname(__file__)		# Main directory
-html_source = os.path.join(server_path,
-						"index.html")		# HTML content
+index_source = os.path.join(server_path,
+						"index.html")		# Index HTML content
+unknown_source = os.path.join(server_path,
+							  "unknown.html") # Unknown page HTML content
 json_source = os.path.join(server_path,
 						"todo_list.json")	# JSON content
 file_repo = os.path.join(server_path,
 					  "file_repository")	# Repository for file uploads
-cert_repo = os.path.abspath(os.path.join(server_path,
-					  					 os.pardir,
-					 					 "cert_repository"))	# Repository for certificates
+#cert_repo = os.path.abspath(os.path.join(server_path,
+#					  					 os.pardir,
+#					 					 "cert_repository"))	# Repository for certificates
+cert_file = os.path.abspath("/etc/letsencrypt/live/alrobison.com/fullchain.pem")
+key_file = os.path.abspath("/etc/letsencrypt/live/alrobison.com/privkey.pem")
 
 # This class is the request handler.
 # do_GET sends a response of 200 when
@@ -39,20 +43,33 @@ cert_repo = os.path.abspath(os.path.join(server_path,
 class AlsRequestHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		self.send_response(200)
-		self.send_header("Content-type", "text/html")
-		self.end_headers()
+		if self.path == "/":
+			self.path = "/index.html"
 
-		# Website body
-		# self.wfile.write(bytes("", "utf-8"))
-		self.wfile.write(bytes(html, "utf-8"))
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
 
-	"""
+			# Website body
+			# self.wfile.write(bytes("", "utf-8"))
+			self.wfile.write(bytes(index, "utf-8"))
+
+		elif self.path == "/todo_list.json":
+			self.send_header("Content-type", "application/json")
+			self.end_headers()
+
+			self.wfile.write(bytes(json, "utf-8"))
+
+		else:
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			self.wfile.write(bytes(unkn, "utf-8"))
+
 	def do_POST(self):
 		self.send_response(200)
 		self.send_header("Content-type", "application/json")
 		self.end_headers()
-		self.wfile.write(bytes(json))
-	"""
+		self.wfile.write(bytes(json, "utf-8"))
 
 def readFiles(source, output):
 	try:
@@ -66,14 +83,16 @@ def readFiles(source, output):
 		print("Something went wrong.")
 		exit(1)
 
-html = ""
+index = ""
 json = ""
-html = readFiles(html_source, html)
+unkn = ""
+index = readFiles(index_source, index)
 json = readFiles(json_source, json)
+unkn = readFiles(unknown_source, unkn)
 
 server = HTTPServer((host_addr, port), AlsRequestHandler)
-cert_file = os.path.join(cert_repo, "public.pem")
-key_file = os.path.join(cert_repo, "private.key")
+#cert_file = os.path.join(cert_repo, "public.pem")
+#key_file = os.path.join(cert_repo, "private.key")
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)			# 7.
 ssl_context.check_hostname = False
 ssl_context.load_cert_chain(certfile=cert_file, keyfile=key_file)
