@@ -21,8 +21,10 @@ port = 443
 
 # Define filepaths
 server_path = os.path.dirname(__file__)		# Main directory
-html_source = os.path.join(server_path,
-						"index.html")		# HTML content
+index_source = os.path.join(server_path,
+						"index.html")		# Index HTML content
+unknown_source = os.path.join(server_path,
+							  "unknown.html") # Unknown page HTML content
 json_source = os.path.join(server_path,
 						"todo_list.json")	# JSON content
 file_repo = os.path.join(server_path,
@@ -41,12 +43,27 @@ key_file = os.path.abspath("/etc/letsencrypt/live/alrobison.com/privkey.pem")
 class AlsRequestHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		self.send_response(200)
-		self.send_header("Content-type", "text/html")
-		self.end_headers()
+		if self.path == "/":
+			self.path = "/index.html"
 
-		# Website body
-		# self.wfile.write(bytes("", "utf-8"))
-		self.wfile.write(bytes(html, "utf-8"))
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			# Website body
+			# self.wfile.write(bytes("", "utf-8"))
+			self.wfile.write(bytes(index, "utf-8"))
+
+		elif self.path == "/todo_list.json":
+			self.send_header("Content-type", "application/json")
+			self.end_headers()
+
+			self.wfile.write(bytes(json, "utf-8"))
+
+		else:
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			self.wfile.write(bytes(unkn, "utf-8"))
 
 	def do_POST(self):
 		self.send_response(200)
@@ -66,10 +83,12 @@ def readFiles(source, output):
 		print("Something went wrong.")
 		exit(1)
 
-html = ""
+index = ""
 json = ""
-html = readFiles(html_source, html)
+unkn = ""
+index = readFiles(index_source, index)
 json = readFiles(json_source, json)
+unkn = readFiles(unknown_source, unkn)
 
 server = HTTPServer((host_addr, port), AlsRequestHandler)
 #cert_file = os.path.join(cert_repo, "public.pem")
