@@ -11,7 +11,7 @@ Last Modified:  2023/01/20
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import ssl
-import os
+from os import path
 
 # Define the host IP and port number
 # An IP of 0.0.0.0 will broadcast on all local NICs
@@ -20,20 +20,19 @@ host_addr = "0.0.0.0"
 port = 443
 
 # Define filepaths
-server_path = os.path.dirname(__file__)		# Main directory
-index_source = os.path.join(server_path,
-						"index.html")		# Index HTML content
-unknown_source = os.path.join(server_path,
-							  "unknown.html") # Unknown page HTML content
-json_source = os.path.join(server_path,
-						"todo_list.json")	# JSON content
-file_repo = os.path.join(server_path,
+server_path = path.dirname(__file__)		# Main directory
+content_repo = path.join(server_path,		# Web page data directory
+						 "content_repository")
+index_source = path.join(content_repo,		# Index HTML content
+						 "index.html")
+unknown_source = path.join(content_repo,	# Unknown page HTML content
+						   "unknown.html")
+json_source = path.join(content_repo,		# JSON content
+						"todo_list.json")
+file_repo = path.join(server_path,
 					  "file_repository")	# Repository for file uploads
-#cert_repo = os.path.abspath(os.path.join(server_path,
-#					  					 os.pardir,
-#					 					 "cert_repository"))	# Repository for certificates
-cert_file = os.path.abspath("/etc/letsencrypt/live/alrobison.com/fullchain.pem")
-key_file = os.path.abspath("/etc/letsencrypt/live/alrobison.com/privkey.pem")
+cert_file = path.abspath("/etc/letsencrypt/live/alrobison.com/fullchain.pem")
+key_file = path.abspath("/etc/letsencrypt/live/alrobison.com/privkey.pem")
 
 # This class is the request handler.
 # do_GET sends a response of 200 when
@@ -53,7 +52,7 @@ class AlsRequestHandler(BaseHTTPRequestHandler):
 			# self.wfile.write(bytes("", "utf-8"))
 			self.wfile.write(bytes(index, "utf-8"))
 
-		elif self.path == "/todo_list.json":
+		elif self.path == "/todo":
 			self.send_header("Content-type", "application/json")
 			self.end_headers()
 
