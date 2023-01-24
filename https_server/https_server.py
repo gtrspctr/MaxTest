@@ -12,6 +12,7 @@ Last Modified:  2023/01/20
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import ssl
 from os import path
+import json
 
 # Define the host IP and port number
 # An IP of 0.0.0.0 will broadcast on all local NICs
@@ -28,7 +29,7 @@ index_source = path.join(content_repo,		# Index HTML content
 unknown_source = path.join(content_repo,	# Unknown page HTML content
 						   "unknown.html")
 json_source = path.join(content_repo,		# JSON content
-						"todo_list.json")
+						"users.json")
 file_repo = path.join(server_path,
 					  "file_repository")	# Repository for file uploads
 cert_file = path.abspath("/etc/letsencrypt/live/alrobison.com/fullchain.pem")
@@ -50,25 +51,40 @@ class AlsRequestHandler(BaseHTTPRequestHandler):
 
 			# Website body
 			# self.wfile.write(bytes("", "utf-8"))
-			self.wfile.write(bytes(index, "utf-8"))
+			self.wfile.write(bytes(index_output, "utf-8"))
 
-		elif self.path == "/todo":
+		elif self.path == "/users":
 			self.send_header("Content-type", "application/json")
 			self.end_headers()
 
-			self.wfile.write(bytes(json, "utf-8"))
-
+			self.wfile.write(bytes(json_output, "utf-8"))
+		"""
 		else:
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 
-			self.wfile.write(bytes(unkn, "utf-8"))
-
+			self.wfile.write(bytes(unkn_output, "utf-8"))
+		"""
 	def do_POST(self):
-		self.send_response(200)
+		self.send_response(201)
 		self.send_header("Content-type", "application/json")
 		self.end_headers()
-		self.wfile.write(bytes(json, "utf-8"))
+		self.wfile.write(bytes(str(json_obj), "utf-8"))
+
+	def post_request_value(self):
+		pass
+
+	def post_request_all_content(self):
+		return json_obj
+
+	def post_update_value(self):
+		pass
+
+	def post_delete_dict(self):
+		pass
+
+	def post_delete_dict_structure(self):
+		pass
 
 def readFiles(source, output):
 	try:
@@ -82,12 +98,16 @@ def readFiles(source, output):
 		print("Something went wrong.")
 		exit(1)
 
-index = ""
-json = ""
-unkn = ""
-index = readFiles(index_source, index)
-json = readFiles(json_source, json)
-unkn = readFiles(unknown_source, unkn)
+index_output = ""
+json_output = ""
+unkn_output = ""
+index_output = readFiles(index_source, index_output)
+json_output = readFiles(json_source, json_output)
+unkn_output = readFiles(unknown_source, unkn_output)
+
+# Get JSON data as an object
+json_obj = json.loads(json_output)
+print(type(json_obj))
 
 server = HTTPServer((host_addr, port), AlsRequestHandler)
 #cert_file = os.path.join(cert_repo, "public.pem")
