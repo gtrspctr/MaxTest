@@ -47,7 +47,7 @@ for key, value in user_list[0].__dict__.items():
 	obj_attributes.append(key)
 	total_attributes += 1
 
-def parseInput(choice, min, max):
+def parseIntAndRange(choice, min, max):
 	try:
 		choice = int(choice)
 		if isinstance(choice, int) and choice >= min and choice <= max:
@@ -67,17 +67,41 @@ def requestValue():
 	for i in range(50):
 		print()
 
-	choice = ""
+	# Ask user which data point to update
+	data_choice = ""
 	while True:
-		print("Of which key would you like the value?")
+		print("Which user would you like to update?")
+		counter = 1
+		for user in user_list:
+			print(str(counter) + ". " + user.name)
+			counter += 1
+		data_choice = input("Enter a number: ")
+
+		if parseIntAndRange(data_choice, 1, 10):
+			data_choice = int(data_choice)
+			break
+		else:
+			print("Not a valid option.")
+			print("Please enter a number corresponding with")
+			print("your desired action.")
+			print()
+			print()
+
+	print()
+	print()
+
+	# Ask user which key to update
+	key_choice = ""
+	while True:
+		print("Which key would you like to update?")
 		counter = 1
 		for attr in obj_attributes:
 			print(str(counter) + ". " + attr)
 			counter += 1
-		choice = input("Enter a number: ")
+		key_choice = input("Enter a number: ")
 
-		if parseInput(choice, 1, 14):
-			choice = int(choice)
+		if parseIntAndRange(key_choice, 1, 14):
+			key_choice = int(key_choice)
 			break
 		else:
 			# Clear screen
@@ -88,10 +112,18 @@ def requestValue():
 			print("your desired action.")
 			print()
 			print()
-"""
-	match choice:
-		case 1:
-"""
+
+	print()
+	print()
+
+	# Ask user for updated value
+	value_choice = input("Enter the updated value: ")
+
+	# Whichever number user chooses, minus by 1 for list index
+	attr = obj_attributes[key_choice-1]
+	print(attr)
+	print(str(user_list[data_choice-1]) + "." + str(attr) + " = " + value_choice)
+	user_list[data_choice-1].attr = value_choice
 
 def changeValue():
 	pass
@@ -120,7 +152,7 @@ def main():
 		choice = input("Enter a number: ")
 
 		# Parse input
-		if parseInput(choice, 1, 5):
+		if parseIntAndRange(choice, 1, 5):
 			choice = int(choice)
 			break
 		else:
