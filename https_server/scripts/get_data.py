@@ -50,6 +50,8 @@ for key, value in user_list[0].__dict__.items():
 	obj_attributes.append(key)
 	total_attributes += 1
 
+key_list = []
+
 # clearScreen() simply prints a blank line 50 times
 # to help keep these easy to read.
 def clearScreen():
@@ -72,6 +74,19 @@ def parseIntAndRange(choice, min, max):
 		# choice cannot be turned into an integer
 		return False
 
+def iterate(data):
+	counter = 0
+	key_list = []
+	if isinstance(data, dict):
+		for k, v in data.items():
+			counter += 1
+			key_list.append(k)
+			print(str(counter) + ". " + k)
+	elif isinstance(data, list):
+		iterate(data[0])
+	else:
+		print("The value is: " + str(v))
+
 # requestAll() simply prints a dump of all json_data,
 # with each dict separated by a blank space for
 # readability.
@@ -85,7 +100,7 @@ def requestAll():
 # dicts.
 # It uses a while loop and parseIntAndRange() to verify
 # input is valid.
-# Then asks the user which value they would like to 
+# Then asks the user which value they would like to
 # update by giving them the keys for the specified
 # user. Again, uses while loop and parseIntAndRange()
 # It then asks the user for the new value.
@@ -94,13 +109,13 @@ def requestAll():
 def requestValue():
 	clearScreen()
 
-	# Ask user which object to update
+	# Ask user which user to update
 	data_choice = ""
 	while True:
 		print("Which user would you like to update?")
 		counter = 1
-		for user in user_list:
-			print(str(counter) + ". " + user.name)
+		for user in json_data:
+			print(str(counter) + ". " + user["name"])
 			counter += 1
 		data_choice = input("Enter a number: ")
 
@@ -121,10 +136,7 @@ def requestValue():
 	key_choice = ""
 	while True:
 		print("Which key would you like to update?")
-		counter = 1
-		for attr in obj_attributes:
-			print(str(counter) + ". " + attr)
-			counter += 1
+		key_it = iterate(json_data[data_choice-1])
 		key_choice = input("Enter a number: ")
 
 		if parseIntAndRange(key_choice, 1, 14):
@@ -132,8 +144,7 @@ def requestValue():
 			break
 		else:
 			# Clear screen
-			for i in range(50):
-				print()
+			clearScreen()
 			print("Not a valid option.")
 			print("Please enter a number corresponding with")
 			print("your desired action.")
@@ -142,11 +153,15 @@ def requestValue():
 
 	print()
 	print()
-	
-	attr = obj_attributes[key_choice-1]
-	#print(str(user_list[data_choice-1]).attr)
-	print(str(user_list[data_choice-1]).__dir__[key_choice-1])
-	print("")
+
+	nest1_choice = ""
+	nest2_choice = ""
+	if key_it == "dict":
+		pass
+	elif key_it == "list:
+		pass
+	elif key_it == "value":
+		print(The value is: " + json_data[
 
 def changeValue():
 	## USE ABOVE FUNCTION HERE
@@ -157,6 +172,8 @@ def changeValue():
 	attr = obj_attributes[key_choice-1]
 	print()
 	print("Old value: " + str(attr))
+	print("Vars: " + str(vars(user_list[data_choice-1])))
+	print(type(vars(user_list[data_choice-1])))
 	user_list[data_choice-1].attr = value_choice
 	print("New value: " + value_choice)
 
