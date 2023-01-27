@@ -1,3 +1,32 @@
+"""
+**This file is incomplete**
+
+This file is meant to run all the actions in Max's
+instructions.
+
+Unfortunately, I ran out of time before I could really
+flesh these out.
+
+To be honest, trying to figure out how to best parse
+nested JSON data is what I really got stuck on. I know
+how to loop through and find the value that I want,
+but I could not figure out how to use input from the user
+to loop through and get what could be a value, a list, or
+another dictionary with it's own values, lists, and dictionaries.
+
+I'm sure I was just overthinking it, but ran out of time.
+
+So this is here just to show some things I tried.
+The User class was my attempt at transforming the JSON
+into a Python object because I know how to handle those.
+But ran into problems with the structure and found that
+I was making it too complicated.
+
+So some of the functions below that started using the
+JSON data itself instead of Python objects.
+"""
+
+
 import requests
 import json
 
@@ -10,6 +39,7 @@ obj_attributes = []
 total_attributes = len(obj_attributes)
 
 class User:
+	# Source: 14
     def __init__(self,
                  id,
                  name,
@@ -74,6 +104,9 @@ def parseIntAndRange(choice, min, max):
 		# choice cannot be turned into an integer
 		return False
 
+# iterate() is an attempt to loop through JSON data to determine
+# if the value is a list or dict or an actual value (str, int, etc.)
+# The intent was to try and get a grasp on the various "nestedness."
 def iterate(data):
 	counter = 0
 	key_list = []
@@ -154,6 +187,7 @@ def requestValue():
 	print()
 	print()
 
+	# Ran out of steam here. This goes nowhere.
 	nest1_choice = ""
 	nest2_choice = ""
 	if key_it == "dict":
@@ -172,9 +206,9 @@ def changeValue():
 	attr = obj_attributes[key_choice-1]
 	print()
 	print("Old value: " + str(attr))
-	print("Vars: " + str(vars(user_list[data_choice-1])))
-	print(type(vars(user_list[data_choice-1])))
-	user_list[data_choice-1].attr = value_choice
+	print("Vars: " + str(vars(user_list[data_choice-1]))) #experimenting...
+	print(type(vars(user_list[data_choice-1])))	#experimenting...
+	user_list[data_choice-1].attr = value_choice #expermimenting... Object has no "attr" attribute...
 	print("New value: " + value_choice)
 
 	# NEED TO POST HERE
@@ -189,9 +223,7 @@ def deleteAll():
 def main():
 	choice = ""
 
-	# Clear screen
-	for i in range(50):
-		print()
+	clearScreen()
 
 	while True:
 		print("What would you like to do?")
@@ -207,9 +239,7 @@ def main():
 			choice = int(choice)
 			break
 		else:
-			# Clear screen
-			for i in range(50):
-				print()
+			clearScreen()
 			print("Not a valid option.")
 			print("Please enter a number corresponding with")
 			print("your desired action.")
