@@ -42,7 +42,7 @@ key_file = path.abspath("/etc/letsencrypt/live/alrobison.com/privkey.pem")
 # Source 2
 # Source 3
 # Source 4
-class AlsRequestHandler(BaseHttpRequestHandler):
+class AlsRequestHandler(BaseHTTPRequestHandler):
 	# do_GET sends a response of 200 when
 	# successful. It also specifies content type
 	# of headers, and will display or "send" data
