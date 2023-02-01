@@ -115,7 +115,7 @@ def iterate(data):
 			counter += 1
 			key_list.append(k)
 			print(str(counter) + ". " + k)
-			return "dict", counter
+		return "dict", counter
 	elif isinstance(data, list):
 		iterate(data[0])
 	else:
@@ -168,13 +168,16 @@ def requestValue():
 	print()
 	print()
 	choices.append(data_choice-1)
-	print("Data_choice: " + str(data_choice))
+	print("Data_choice: " + str(data_choice-1))
+	print(choices)
 
 	# Ask user which key to update
 	while True:
 		key_choice = ""
 		print("Which key would you like to view?")
 		key_iteration = iterate(json_data[choices[-1]]) # -1 : last index
+		print(json_data[choices[-1]])
+		print(type(json_data[choices[-1]]))
 		key_choice = input("Enter a number: ")
 
 		if parseIntAndRange(key_choice, 1, key_iteration[1]):
